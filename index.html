@@ -5,264 +5,54 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>FF14 5v5 ジョブ抽選</title>
   <style>
-    :root{
-      --bg0:#0b0f17;
-      --bg1:#0f1626;
-      --card:#111a2b;
-      --card2:#0f172a;
-      --border:rgba(255,255,255,.10);
-      --text:#e8eefc;
-      --muted:rgba(232,238,252,.72);
-      --muted2:rgba(232,238,252,.55);
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", sans-serif; margin: 24px; background:#0b1020; color:#fff; }
+    h1 { font-size: 20px; margin: 0 0 12px; }
+    .topbar { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:12px; }
+    button { padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.08); color:#fff; cursor:pointer; }
+    button:hover { background:rgba(255,255,255,.14); }
+    .tag { display:inline-block; font-size:12px; padding:2px 8px; border-radius:999px; border:1px solid rgba(255,255,255,.2); }
+    .ok { border-color:#2e7d32; color:#7CFF9B; }
+    .warn { border-color:#b71c1c; color:#ff8a8a; }
+    .muted { color:rgba(255,255,255,.7); font-size:13px; }
+    .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .card { border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:14px; background:rgba(255,255,255,.05); }
+    ul { margin:10px 0 0; padding-left:20px; }
+    li { margin:6px 0; }
+    code { background:rgba(255,255,255,.12); padding:2px 6px; border-radius:6px; }
+    @media (max-width: 820px){ .grid2 { grid-template-columns:1fr; } }
 
-      --accent:#7aa2ff;
-      --accent2:#a78bfa;
-      --good:#35d07f;
-      --warn:#ff5c7a;
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --radius:16px;
-    }
-
-    /* 横幅をできるだけ使う（右の空白が出にくい） */
-    body{
-      margin: 10px;
-      max-width: 1600px;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(1200px 500px at 20% 0%, rgba(122,162,255,.20), transparent 60%),
-        radial-gradient(900px 500px at 90% 10%, rgba(167,139,250,.16), transparent 55%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
-    }
-
-    /* ヘッダーバー */
-    .header{
-      border:1px solid var(--border);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      box-shadow: var(--shadow);
-      border-radius: var(--radius);
-      padding: 14px 14px 12px;
-      margin-bottom: 12px;
-    }
-
-    h1{
-      font-size: 22px;
-      margin: 0 0 10px;
-      letter-spacing: .2px;
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-    .badge{
-      font-size:12px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      background: rgba(255,255,255,.03);
-    }
-
-    .topbar{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
-
-    /* ボタン */
-    button{
-      padding: 12px 16px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.04);
-      color: var(--text);
-      cursor:pointer;
-      font-size: 16px;
-      box-shadow: 0 6px 18px rgba(0,0,0,.18);
-      transition: transform .05s ease, background .12s ease, border-color .12s ease;
-    }
-    button:hover{
-      background: rgba(255,255,255,.06);
-      border-color: rgba(255,255,255,.16);
-    }
-    button:active{ transform: translateY(1px); }
-
-    .hint{
-      color: var(--muted2);
-      font-size: 14px;
-    }
-
-    .tag{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      font-size: 13px;
-      padding: 6px 12px;
-      border-radius: 999px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.03);
-      color: var(--muted);
-      user-select:none;
-    }
-    .dot{
-      width:8px;height:8px;border-radius:999px;
-      background: rgba(232,238,252,.35);
-    }
-    .ok{ color: var(--good); border-color: rgba(53,208,127,.35); background: rgba(53,208,127,.08); }
-    .ok .dot{ background: var(--good); }
-    .warn{ color: var(--warn); border-color: rgba(255,92,122,.35); background: rgba(255,92,122,.08); }
-    .warn .dot{ background: var(--warn); }
-
-    .grid2{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .card{
-      border:1px solid var(--border);
-      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 14px;
-    }
-
-    .cardTitle{
-      display:flex;
-      align-items:baseline;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom: 10px;
-    }
-    .cardTitle strong{
-      font-size: 18px;
-      letter-spacing:.2px;
-    }
-    .counts{
-      color: var(--muted);
-      font-size: 14px;
-      white-space:nowrap;
-    }
-
-    ul{ margin: 0; padding-left: 0; list-style:none; }
-    li{
-      margin: 10px 0;   /* 行間 */
-      padding: 10px 12px;
-      border:1px solid rgba(255,255,255,.08);
-      background: rgba(0,0,0,.16);
-      border-radius: 14px;
-    }
-
-    /* ジョブ表示（大きめ） */
-    .jobRow{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      font-size: 20px;   /* 文字 */
-      line-height:1.2;
-    }
-    .jobIcon{
-      width: 32px;       /* アイコン */
-      height: 32px;
-      object-fit: contain;
-      flex: 0 0 32px;
-      filter: drop-shadow(0 3px 10px rgba(0,0,0,.35));
-    }
-    .rolePill{
-      margin-left: auto;
-      font-size: 12px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border:1px solid rgba(255,255,255,.12);
-      color: var(--muted);
-      background: rgba(255,255,255,.03);
-    }
-    .role-melee{ border-color: rgba(122,162,255,.35); color: rgba(180,205,255,.95); background: rgba(122,162,255,.10); }
-    .role-range{ border-color: rgba(167,139,250,.35); color: rgba(216,200,255,.95); background: rgba(167,139,250,.10); }
-
-    /* ログ */
-    .logBox{
-      margin-top: 12px;
-      border:1px solid var(--border);
-      background: rgba(0,0,0,.20);
-      border-radius: var(--radius);
-      padding: 14px;
-      box-shadow: var(--shadow);
-    }
-    .logTitle{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom: 8px;
-    }
-    .logTitle strong{ font-size: 16px; }
-    #log{ color: var(--muted); font-size: 14px; }
-
-    code{
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.10);
-      padding: 2px 6px;
-      border-radius: 8px;
-      color: rgba(232,238,252,.9);
-    }
-
-    @media (max-width: 920px){
-      body{ max-width:none; }
-      .grid2{ grid-template-columns: 1fr; }
-      li{ padding: 10px 10px; }
-      .jobRow{ font-size: 18px; }
-      .jobIcon{ width: 30px; height: 30px; flex-basis: 30px; }
-    }
+    /* 文字とアイコンを大きめに */
+    .jobRow{ display:flex; align-items:center; gap:10px; }
+    .jobIcon{ width:28px; height:28px; object-fit:contain; flex:0 0 28px; }
+    .jobRow span{ font-size:16px; font-weight:600; }
   </style>
 </head>
 <body>
+  <h1>5対5 ジョブランダム抽選（チーム内重複なし / 近接差±1以内）</h1>
 
-  <div class="header">
-    <h1>
-      5対5 ジョブランダム抽選
-      <span class="badge">チーム内重複なし / 近接差±1以内</span>
-    </h1>
-
-    <div class="topbar">
-      <button id="btn">ランダム抽選</button>
-      <button id="btnCopy">結果をコピー</button>
-
-      <span id="status" class="tag">
-        <span class="dot"></span>
-        <span>未抽選</span>
-      </span>
-
-      <span class="hint">ルール: チーム内重複NG / |近接A-近接B| ≤ 1</span>
-    </div>
+  <div class="topbar">
+    <button id="btn">ランダム抽選</button>
+    <button id="btnCopy">結果をコピー</button>
+    <span id="status" class="tag muted">未抽選</span>
+    <span class="muted">ルール: チーム内重複NG / |近接A-近接B| ≤ 1</span>
   </div>
 
   <div class="grid2">
     <div class="card">
-      <div class="cardTitle">
-        <strong>チームA</strong>
-        <span id="countA" class="counts"></span>
-      </div>
+      <div><strong>チームA</strong> <span id="countA" class="muted"></span></div>
       <ul id="teamA"></ul>
     </div>
-
     <div class="card">
-      <div class="cardTitle">
-        <strong>チームB</strong>
-        <span id="countB" class="counts"></span>
-      </div>
+      <div><strong>チームB</strong> <span id="countB" class="muted"></span></div>
       <ul id="teamB"></ul>
     </div>
   </div>
 
-  <div class="logBox">
-    <div class="logTitle">
-      <strong>抽選ログ</strong>
-      <span class="badge">最大 <code>5000</code> 回試行</span>
-    </div>
-    <div id="log">ここに試行回数などが出ます</div>
-    <div class="hint" style="margin-top:8px;">
-      ※条件が厳しい時は自動で引き直します。
+  <div class="card" style="margin-top:16px;">
+    <div><strong>抽選ログ</strong></div>
+    <div id="log" class="muted" style="margin-top:8px;">ここに試行回数などが出ます</div>
+    <div class="muted" style="margin-top:8px;">
+      ※条件が厳しい時は自動で引き直します（最大 <code>5000</code> 回試行）。
     </div>
   </div>
 
@@ -320,8 +110,8 @@
 
   function getJobIconPath(jobName){
     const file = JOB_ICON[jobName];
-    return file ? `アイコン/${file}` : null;
-
+    return file ? `./icons/${file}` : null;
+  }
 
   function randInt(max) { return Math.floor(Math.random() * max); }
 
@@ -367,31 +157,36 @@
   const btn = document.getElementById("btn");
   const btnCopy = document.getElementById("btnCopy");
 
+  // 安全なDOM生成版（壊れにくい）
   function renderTeam(el, team) {
     el.innerHTML = "";
     team.forEach(j => {
       const li = document.createElement("li");
+
+      const row = document.createElement("div");
+      row.className = "jobRow";
+
       const icon = getJobIconPath(j.name);
-      const roleClass = (j.role === "近接") ? "role-melee" : "role-range";
-      li.innerHTML = `
-        <div class="jobRow">
-          ${icon ? `<img class="jobIcon" src="${icon}" alt="${j.name}">` : ""}
-          <span>${j.name}</span>
-          <span class="rolePill ${roleClass}">${j.role}</span>
-        </div>
-      `;
+      if (icon) {
+        const img = document.createElement("img");
+        img.className = "jobIcon";
+        img.src = icon;
+        img.alt = j.name;
+        row.appendChild(img);
+      }
+
+      const span = document.createElement("span");
+      span.textContent = formatJob(j);
+      row.appendChild(span);
+
+      li.appendChild(row);
       el.appendChild(li);
     });
   }
 
   function setStatus(text, ok) {
-    elStatus.querySelector("span:last-child").textContent = text;
+    elStatus.textContent = text;
     elStatus.className = "tag " + (ok ? "ok" : "warn");
-    // dot色も変える
-    const dot = elStatus.querySelector(".dot");
-    dot.className = "dot";
-    if (ok) dot.style.background = "var(--good)";
-    else dot.style.background = "var(--warn)";
   }
 
   function getTextResult(teamA, teamB) {
@@ -421,8 +216,8 @@
     renderTeam(elA, result.teamA);
     renderTeam(elB, result.teamB);
 
-    elCountA.textContent = `近接 ${result.meleeA} / 遠隔 ${5 - result.meleeA}`;
-    elCountB.textContent = `近接 ${result.meleeB} / 遠隔 ${5 - result.meleeB}`;
+    elCountA.textContent = `（近接 ${result.meleeA} / 遠隔 ${5 - result.meleeA}）`;
+    elCountB.textContent = `（近接 ${result.meleeB} / 遠隔 ${5 - result.meleeB}）`;
 
     setStatus("OK：条件クリア", true);
     elLog.textContent = `条件クリアまでの試行回数：${result.tries} 回（近接A=${result.meleeA}, 近接B=${result.meleeB}）`;
@@ -451,4 +246,3 @@
 </script>
 </body>
 </html>
-
